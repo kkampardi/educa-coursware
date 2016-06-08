@@ -2,6 +2,8 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
 
 # Create your models here.
 # Building the course models
@@ -40,3 +42,10 @@ class Module(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Content(models.Model):
+    module = models.ForeignKey(Module, related_name='contents')
+    content_type = models.ForeignKey(ContentType)
+    object_id = models.PositiveIntegerField()
+    item = GenericForeignKey('content_type', 'object_id')
