@@ -46,7 +46,13 @@ class Module(models.Model):
 
 class Content(models.Model):
     module = models.ForeignKey(Module, related_name='contents')
-    content_type = models.ForeignKey(ContentType)
+    content_type = models.ForeignKey(ContentType, limit_choices_to={
+        'model_in': ('text',
+                'video',
+                'image',
+                'file',)
+            }
+        )
     object_id = models.PositiveIntegerField()
     item = GenericForeignKey('content_type', 'object_id')
 
@@ -74,3 +80,7 @@ class File(ItemBase):
 
 class Video(ItemBase):
     url = models.URLField()
+
+
+class Image(ItemBase):
+    file = models.FileField(upload_to='images')
