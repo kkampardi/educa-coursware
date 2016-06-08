@@ -1,0 +1,96 @@
+[
+{
+  "model": "courses.subject",
+  "pk": 1,
+  "fields": {
+    "title": "Test Subject",
+    "slug": "test-subject"
+  }
+},
+{
+  "model": "courses.subject",
+  "pk": 2,
+  "fields": {
+    "title": "Another Test Subject",
+    "slug": "another-test-subject"
+  }
+},
+{
+  "model": "courses.course",
+  "pk": 1,
+  "fields": {
+    "owner": 1,
+    "subject": 2,
+    "title": "Angular",
+    "slug": "angular",
+    "overview": "This is an angular course",
+    "created": "2016-06-08T13:23:49.304Z"
+  }
+},
+{
+  "model": "courses.course",
+  "pk": 2,
+  "fields": {
+    "owner": 1,
+    "subject": 2,
+    "title": "Bootstrap",
+    "slug": "bootstrap",
+    "overview": "This is cource bootstrap",
+    "created": "2016-06-08T13:24:50.022Z"
+  }
+},
+{
+  "model": "courses.module",
+  "pk": 1,
+  "fields": {
+    "cource": 1,
+    "title": "Week 1",
+    "description": "This is module for course angular week 1"
+  }
+},
+{
+  "model": "courses.module",
+  "pk": 2,
+  "fields": {
+    "cource": 1,
+    "title": "Week 2",
+    "description": "This is module for course angular week"
+  }
+},
+{
+  "model": "courses.module",
+  "pk": 3,
+  "fields": {
+    "cource": 1,
+    "title": "Week 3",
+    "description": "This is module for course angular week"
+  }
+},
+{
+  "model": "courses.module",
+  "pk": 4,
+  "fields": {
+    "cource": 2,
+    "title": "Week 1",
+    "description": "This is module for course bootstrap week 1"
+  }
+},
+{
+  "model": "courses.module",
+  "pk": 5,
+  "fields": {
+    "cource": 2,
+    "title": "Week 2",
+    "description": "This is module for course bootstrap week 2"
+  }
+},
+{
+  "model": "courses.module",
+  "pk": 6,
+  "fields": {
+    "cource": 2,
+    "title": "Week 3",
+    "description": "This is module for course bootstrap week 3"
+  }
+}
+]
