@@ -4,6 +4,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
+from .fields import OrderField
 
 # Create your models here.
 # Building the course models
@@ -11,7 +12,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 
 class Subject(models.Model):
     title = models.CharField(max_length=200)
-    slug = models.SlugField(max_length=200)
+    slug = models.SlugField(max_length=200, unique=True)
 
     class Meta:
         ordering = ('title',)
@@ -24,7 +25,7 @@ class Course(models.Model):
     owner = models.ForeignKey(User, related_name='courses_created')
     subject = models.ForeignKey(Subject, related_name='courses')
     title = models.CharField(max_length=200)
-    slug = models.SlugField(max_length=200, unique=True)
+    slug = models.SlugField(max_length=200, unique=True, blank=True,)
     overview = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
 
@@ -36,13 +37,15 @@ class Course(models.Model):
 
 
 class Module(models.Model):
-    cource = models.ForeignKey(Course, related_name='modules')
+    course = models.ForeignKey(Course, related_name='modules')
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
+    order = OrderField(for_fields=['course'])
 
     def __str__(self):
-        return self.title
-
+        return '{}. {}'.format(self.order, self.title)
+#    def __str__self(self):
+#        return self.title
 
 class Content(models.Model):
     module = models.ForeignKey(Module, related_name='contents')
@@ -55,6 +58,10 @@ class Content(models.Model):
         )
     object_id = models.PositiveIntegerField()
     item = GenericForeignKey('content_type', 'object_id')
+    order = OrderField(for_fields=['module'])
+
+    class meta:
+        ordering = ['order']
 
 
 class ItemBase(models.Model):
