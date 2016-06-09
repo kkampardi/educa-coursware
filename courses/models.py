@@ -47,6 +47,7 @@ class Module(models.Model):
 #    def __str__self(self):
 #        return self.title
 
+
 class Content(models.Model):
     module = models.ForeignKey(Module, related_name='contents')
     content_type = models.ForeignKey(ContentType, limit_choices_to={
