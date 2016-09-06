@@ -1,7 +1,7 @@
 .DS_Store
 /*.tgz
 db.sqlite3
-educaenv
+venv
 migrations
 *.pyc
 staticfiles
