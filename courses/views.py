@@ -1,8 +1,8 @@
 from django.shortcuts import render
-from django.core.urlsolvers import reverse_lazy
+from django.core.urlresolvers import reverse_lazy
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from braces.views import LoginRequieredMixin, PermissionRequiredMixin
+from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 
 from .models import Course
 
@@ -23,7 +23,7 @@ class OwnerEditMixin(object):
         return super(OwnerEditMixin, self).form_valid(form)
 
 
-class OwnerCourseMixin(OwnerMixin, LoginRequieredMixin):
+class OwnerCourseMixin(OwnerMixin, LoginRequiredMixin):
     model = Course
     fields = ['subject', 'title', 'slug', 'overview']
     success_url = reverse_lazy('manage_course_list')
