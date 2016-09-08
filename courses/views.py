@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic.base import TemplateResponseMixin, View
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic.list import ListView
@@ -82,7 +82,7 @@ class CourseModuleUpdateView(TemplateResponseMixin, View):
     view to make it accessible to other methods.
     """
     def dispatch(self, request, pk):
-        self.cource = get_object_or_404(Course, id=pk, owner=request.user)
+        self.course = get_object_or_404(Course, id=pk, owner=request.user)
         return super(CourseModuleUpdateView, self).dispatch(request, pk)
 
 
@@ -94,10 +94,11 @@ class CourseModuleUpdateView(TemplateResponseMixin, View):
     """
     def get(self, request, *args, **kwargs):
         formset = self.get_formset()
-        return self.render_to_response({
-            'course': self.course,
-            'formset': formset,
-        })
+        return self.render_to_response(
+            {
+                'course': self.course,
+                'formset': formset
+                })
 
 
     def post(self, request, *args, **kwargs):
@@ -105,10 +106,11 @@ class CourseModuleUpdateView(TemplateResponseMixin, View):
         if formset.is_valid():
             formset.save()
             return redirect('manage_course_list')
-        return self.render_to_response({
-            'course': self.course,
-            'formset': formset,
-        })
+        return self.render_to_response(
+            {
+                'course': self.course,
+                'formset': formset
+                })
 
 
 class ContentCreateUpdateView(TemplateResponseMixin, View):
