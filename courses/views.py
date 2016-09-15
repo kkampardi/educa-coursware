@@ -1,13 +1,15 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic.base import TemplateResponseMixin, View
+from django.views.generic.detail import DetailView
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin, CsrfExemptMixin, JsonRequestResponseMixin
 from django.forms.models import modelform_factory
 from django.apps import apps
+from django.db.models import Count
 
-from .models import Course, Module, Content
+from .models import Course, Module, Content, Subject
 from .forms import ModuleFormSet
 
 
@@ -210,3 +212,46 @@ class ContentOrderView(CsrfExemptMixin, JsonRequestResponseMixin, View):
         return self.render_json_response({
             'saved': 'OK'
         })
+
+
+class CourseListView(TemplateResponseMixin, View):
+    model = Course
+    template_name = 'courses/course/list.html'
+
+    def get(self, request, subject=None):
+        """
+        We retrieve all subjects, including the total number of courses for each of
+        them. We use the ORM's annotate() method with the Count() aggregation
+        function for doing so.
+        """
+
+        subjects = Subject.objects.annotate(total_courses=Count('courses'))
+        courses = Course.objects.annotate(total_modules=Count('modules'))
+
+        """"
+        We retrieve all available courses, including the total number of modules
+        contained in each course.
+        3. If a subject slug URL parameter is given we retrieve the corresponding
+        subject object and we limit the query to the courses that belong to the
+        given subject.
+        """
+
+        if  subject:
+            subject = get_object_or_404(Subject, slug=subject)
+            courses = courses.filter(subject=subject)
+
+        """
+        We use the render_to_response() method provided by
+        TemplateResponseMixin to render the objects to a template
+        and return an HTTP response
+        """
+
+        return self.render_to_response({
+            'subjects' : subjects,
+            'subject' : subject,
+            'courses' : courses,
+        })
+
+class CourseDetailView(DetailView):
+    model = Course
+    template_name = 'courses/course/detail.html'
