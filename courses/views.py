@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic.base import TemplateResponseMixin, View
+from django.views.generic.detail import DetailView
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -224,7 +225,7 @@ class CourseListView(TemplateResponseMixin, View):
         function for doing so.
         """
 
-        subjects = Subject.objects.annoteate(total_courses=Count('courses'))
+        subjects = Subject.objects.annotate(total_courses=Count('courses'))
         courses = Course.objects.annotate(total_modules=Count('modules'))
 
         """"
@@ -233,7 +234,7 @@ class CourseListView(TemplateResponseMixin, View):
         3. If a subject slug URL parameter is given we retrieve the corresponding
         subject object and we limit the query to the courses that belong to the
         given subject.
-        """"
+        """
 
         if  subject:
             subject = get_object_or_404(Subject, slug=subject)
@@ -250,3 +251,7 @@ class CourseListView(TemplateResponseMixin, View):
             'subject' : subject,
             'courses' : courses,
         })
+
+class CourseDetailView(DetailView):
+    model = Course
+    template_name = 'courses/course/detail.html'
