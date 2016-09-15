@@ -25,4 +25,6 @@ urlpatterns = [
     url(r'^course/', include('courses.urls')),
     # default view
     url(r'^$', CourseListView.as_view(), name='course_list'),
+    # student registration urls
+    url(r'^students/', include('students.urls')),
 ]
