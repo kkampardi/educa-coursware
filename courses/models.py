@@ -4,6 +4,9 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
+from django.template.loader import render_to_string
+from django.utils.safestring import mark_safe
+
 from .fields import OrderField
 
 # Create your models here.
@@ -21,6 +24,17 @@ class Subject(models.Model):
         return self.title
 
 
+    """
+    This method uses the render_to_string() function for rendering a template and
+    returning the rendered content as a string. Each kind of content is rendered using a
+    template named after the content model. We use self._meta.model_name to build
+    the appropriate template name for la . The render() methods provides a common
+    interface for rendering diverse content.
+    """
+    def render(self):
+        return render_to_string('courses/content/{}.html'.format(
+        self._meta.model_name), {'item': self})
+
 class Course(models.Model):
     owner = models.ForeignKey(User, related_name='courses_created')
     subject = models.ForeignKey(Subject, related_name='courses')
@@ -28,6 +42,7 @@ class Course(models.Model):
     slug = models.SlugField(max_length=200, unique=True, blank=True,)
     overview = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
+    students = models.ManyToManyField(User,related_name='courses_joined',blank=True)
 
     class meta:
         ordering = ('-created')
@@ -76,6 +91,9 @@ class ItemBase(models.Model):
 
     def __str__(self):
         self.title
+
+    def render(self):
+        return render_to_string('courses/content/{}.html'.format(self._meta.model_name), {'item': self})
 
 
 class Text(ItemBase):

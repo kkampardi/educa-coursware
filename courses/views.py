@@ -11,7 +11,7 @@ from django.db.models import Count
 
 from .models import Course, Module, Content, Subject
 from .forms import ModuleFormSet
-
+from students.forms import CourseEnrollForm
 
 # create mixins first
 
@@ -255,3 +255,30 @@ class CourseListView(TemplateResponseMixin, View):
 class CourseDetailView(DetailView):
     model = Course
     template_name = 'courses/course/detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(CourseDetailView, self).get_context_data(**kwargs)
+        context['enroll_form'] = CourseEnrollForm(
+            initial={'course':self.object})
+        return context
+
+
+class StudentCourseDetailView(DetailView):
+    model= Course
+    template_name = 'students/course/detail.html'
+
+    def get_queryset(self):
+        qs = super(StudentCourseDetailView, self).get_queryset()
+        return qs.filter(students__in=[self.request.user])
+
+    def get_context_data(self, **kwargs):
+        context = super(StudentCourseDetailView, self).get_context_data(**kwargs)
+        # get course object
+        course = self.get_object()
+        if 'module_id' in self.kwargs:
+            # get current module
+            context['module'] = course.modules.get(id=self.kwargs['module_id'])
+        else:
+            # get first module
+            context['module'] = course.modules.all()[0]
+        return context
