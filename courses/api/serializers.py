@@ -8,7 +8,7 @@ class SubjectSerializer(serializers.ModelSerializer):
 
 class ModuleSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Module
+        model = Course
         fields = ('order', 'title', 'description')
 
 
