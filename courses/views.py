@@ -4,6 +4,7 @@ from django.views.generic.detail import DetailView
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.core.cache import cache
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin, CsrfExemptMixin, JsonRequestResponseMixin
 from django.forms.models import modelform_factory
 from django.apps import apps
@@ -225,8 +226,20 @@ class CourseListView(TemplateResponseMixin, View):
         function for doing so.
         """
 
-        subjects = Subject.objects.annotate(total_courses=Count('courses'))
-        courses = Course.objects.annotate(total_modules=Count('modules'))
+        """
+        Caching content
+        First we try to get the all_students key from the cache using cache.
+        get() . This returns None if the given key is not found. If no key is found (not cached
+        yet, or cached but timed out) we perform the query to retrieve all Subject objects
+        and their number of courses, and we cache the result using cache.set() .
+        """
+        subjects = cache.get('all_subjects')
+        if not subjects:
+            subjects = Subject.objects.annotate(
+                        total_courses=Count('courses'))
+            cache.set('all_subjects', subjects)
+
+        all_courses = Course.objects.annotate(total_modules=Count('modules'))
 
         """"
         We retrieve all available courses, including the total number of modules
@@ -238,7 +251,16 @@ class CourseListView(TemplateResponseMixin, View):
 
         if  subject:
             subject = get_object_or_404(Subject, slug=subject)
-            courses = courses.filter(subject=subject)
+            key = 'subject_{}_courses'.format(subject.id)
+            courses = cache.get(key)
+            if not courses:
+                courses = all_courses.filter(subject=subject)
+                cache.set(key, courses)
+        else:
+            courses = cache.get('all_courses')
+            if not courses:
+                courses = all_courses
+                cache.set('all_courses', courses)
 
         """
         We use the render_to_response() method provided by
@@ -247,10 +269,10 @@ class CourseListView(TemplateResponseMixin, View):
         """
 
         return self.render_to_response({
-            'subjects' : subjects,
-            'subject' : subject,
-            'courses' : courses,
-        })
+                                            'subjects' : subjects,
+                                            'subject' : subject,
+                                            'courses' : courses,
+                                        })
 
 class CourseDetailView(DetailView):
     model = Course

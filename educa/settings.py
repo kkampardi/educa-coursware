@@ -40,12 +40,15 @@ INSTALLED_APPS = [
     'courses',
     'students',
     'embed_video',
+    'memcache_status',
 ]
 
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
@@ -54,6 +57,11 @@ MIDDLEWARE_CLASSES = [
 ]
 
 ROOT_URLCONF = 'educa.urls'
+
+# high level caching settings
+CACHE_MIDDLEWARE_ALIAS = 'default'
+CACHE_MIDDLEWARE_SECONDS = 60 * 15 # 15 minutes
+CACHE_MIDDLEWARE_KEY_PREFIX = 'educa'
 
 TEMPLATES = [
     {
@@ -73,6 +81,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'educa.wsgi.application'
 
+
+# Cash
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': '127.0.0.1:11211',
+    }
+}
 
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
