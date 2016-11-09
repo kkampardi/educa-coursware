@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'courses',
     'students',
     'embed_video',
+    'memcache_status',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -73,6 +74,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'educa.wsgi.application'
 
+
+# Cash
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': '127.0.0.1:11211',
+    }
+}
 
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
