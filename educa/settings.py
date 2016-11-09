@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'students',
     'embed_video',
     'memcache_status',
+    'rest_framework',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -57,6 +58,14 @@ MIDDLEWARE_CLASSES = [
 ]
 
 ROOT_URLCONF = 'educa.urls'
+
+# REST settings
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+        ]
+}
 
 # high level caching settings
 CACHE_MIDDLEWARE_ALIAS = 'default'
